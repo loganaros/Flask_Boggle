@@ -1,0 +1,23 @@
+.board {
+    margin: 0px;
+    padding: 0px;
+    display: grid;
+    grid-template-columns: repeat(5, 100px);
+    grid-template-rows: repeat(5, 100px);
+}
+
+.board-piece {
+    padding: 0px;
+    margin: 0px;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    border: solid black;
+    font-size: 50px;
+}
+
+form {
+    padding: 1rem;
+    margin: 1rem;
+}

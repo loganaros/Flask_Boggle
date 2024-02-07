@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Boggle</h1>
+<h2 id="score">Score: 0</h2>
+<h3 id="timer"></h3>
+<p id="message"></p>
+<div class="board">
+    {% for row in board %}
+        {% for letter in row %}
+        <div class="board-piece">{{ letter }}</div>
+        {% endfor %}
+    {% endfor %}
+</div>
+
+<div>
+    <form method="POST" id="submit-guess">
+        <input type="text" name="guess" id="guess-word">
+        <button>Submit Guess</button>
+    </form>
+</div>
+
+{% endblock %}
