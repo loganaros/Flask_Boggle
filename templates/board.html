@@ -2,7 +2,8 @@
 
 {% block content %}
 <h1>Boggle</h1>
-<h2 id="score">Score: 0</h2>
+<h2>High Score: {{ highscore }}</h2>
+<h2 id="score">Your Score: 0</h2>
 <h3 id="timer"></h3>
 <p id="message"></p>
 <div class="board">
@@ -20,4 +21,10 @@
     </form>
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let boggle = new Boggle("boggle", 60);
+</script>
 {% endblock %}

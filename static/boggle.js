@@ -1,58 +1,71 @@
 const $guessForm = $("#submit-guess");
+const $guessInput = $("#guess-word");
 const $msg = $("#message");
 const $score = $("#score");
 const $timer = $("#timer");
 
-let score = 0;
+class Boggle {
+    constructor(board, time) {
+        this.timeLeft = time;
+        this.gameTimer = setInterval(this.updateTimer.bind(this), 1000);
+        this.showTimer();
 
-async function checkGuess(e) {
-    e.preventDefault();
-    const guess = $("#guess-word").val()
+        this.score = 0;
+        this.board = board;
+        this.words = new Set();
 
-    const res = await axios.get("/submit-guess", { params: { guess: guess}});
-    const responseVal = res.data.result;
-
-    if(responseVal == "ok") {
-        score += guess.length;
+        $guessForm.on("submit", this.checkGuess.bind(this));
     }
-    showScore(score);
-    showMessage(responseVal, score);
-}
 
-let timeLeft = 5;
-let gameTimer;
-
-function timer() {
-    gameTimer = setInterval(updateTimer, 1000);
-}
-
-timer();
-
-function updateTimer() {
-    timeLeft -= 1;
-    showTimer(timeLeft);
-    if(timeLeft == 0) {
-        clearInterval(gameTimer);
-        $guessForm.hide();
-        postScore(score);
+    updateTimer() {
+        this.timeLeft -= 1;
+        this.showTimer();
+        if(this.timeLeft == 0) {
+            clearInterval(this.gameTimer);
+            $guessForm.hide();
+            this.postScore();
+        }
     }
-}
 
-function showTimer(seconds) {
-    $timer.text(`${seconds} seconds remaining!`);
-}
+    showTimer() {
+        $timer.text(`${this.timeLeft} seconds remaining!`);
+    }
 
-function showScore(score) {
-    $score.text(`Score: ${score}`);
-}
+    async checkGuess(e) {
+        e.preventDefault();
+        const guess = $guessInput.val();
+    
+        const res = await axios.get("/submit-guess", { params: { guess: guess}});
+        const responseVal = res.data.result;
+    
+        if(responseVal == "ok" && !this.words.has(guess)) {
+            this.score += guess.length;
+            this.words.add(guess);
+            this.showMessage(`'${guess}' was found!`);
+        } else if(responseVal == "not-on-board") {
+            this.showMessage(`'${guess}' is not on the board.`);
+        } else if(responseVal == "not-word") {
+            this.showMessage(`'${guess}' is not a word.`);
+        }
+        $guessInput.val('');
+        this.showScore();
+    }
 
-async function postScore(score) {
-    const res = await axios.post("/post-score", { score: score});
-    return res;
+    showScore() {
+        $score.text(`Score: ${this.score}`);
+    }
+    
+    async postScore() {
+        const res = await axios.post("/post-score", { score: this.score});
+        if(res.data.newHighScore) {
+            this.showMessage("New High Score! : " + this.score);
+        } else {
+            this.showMessage("Final Score : " + this.score)
+        }
+    }
+    
+    showMessage(message) {
+        $msg.text(message);
+    }
+    
 }
-
-function showMessage(message) {
-    $msg.text(message);
-}
-
-$guessForm.on("submit", checkGuess);
