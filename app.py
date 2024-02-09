@@ -18,12 +18,12 @@ def home():
 @app.route("/start", methods=["POST"])
 def start_game():
     """Handles game start ang generates new boggle game board"""
-    session['board'] = boggle_game.make_board()
     return redirect("/board")
 
 @app.route("/board", methods=["POST", "GET"])
 def board():
     """Main game screen"""
+    session['board'] = boggle_game.make_board()
     return render_template("board.html", board=session.get('board'), highscore=session.get('highscore', 0))
 
 @app.route("/submit-guess")
